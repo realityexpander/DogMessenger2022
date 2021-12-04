@@ -1,4 +1,4 @@
-package com.devtides.dogs.view
+package com.realityexpander.dogs.view
 
 import android.view.View
 

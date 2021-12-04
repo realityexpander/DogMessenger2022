@@ -1,10 +1,9 @@
-package com.devtides.dogs.viewmodel
+package com.realityexpander.dogs.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.devtides.dogs.model.DogBreed
-import com.devtides.dogs.model.DogDatabase
+import com.realityexpander.dogs.model.DogBreed
+import com.realityexpander.dogs.model.DogDatabase
 import kotlinx.coroutines.launch
 
 class DetailViewModel(application: Application) : BaseViewModel(application) {

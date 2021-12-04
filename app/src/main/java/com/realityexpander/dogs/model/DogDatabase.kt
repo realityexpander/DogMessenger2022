@@ -1,4 +1,4 @@
-package com.devtides.dogs.model
+package com.realityexpander.dogs.model
 
 import android.content.Context
 import androidx.room.Database

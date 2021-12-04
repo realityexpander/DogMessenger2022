@@ -1,4 +1,4 @@
-package com.devtides.dogs.view
+package com.realityexpander.dogs.view
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -10,8 +10,9 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
-import com.devtides.dogs.R
-import com.devtides.dogs.util.PERMISSION_SEND_SMS
+import com.realityexpander.dogs.R
+import com.realityexpander.dogs.util.PERMISSION_SEND_SMS
+import com.realityexpander.dogs.util.PERMISSION_WRITE_EXTERNAL_STORAGE
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -51,8 +52,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun checkWriteExternalPermission() {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder(this)
+                    .setTitle("Write External Storage permission")
+                    .setMessage("This app requires access to write to file storage to share an image.")
+                    .setPositiveButton("Ask me") {dialog, which ->
+                        requestWriteExternalPermission()
+                    }
+                    .setNegativeButton("No") {dialog, which ->
+                        notifyDetailFragment(false)
+                    }
+                    .show()
+            } else {
+                requestWriteExternalPermission()
+            }
+        } else {
+            notifyDetailFragment(true)
+        }
+    }
+
     private fun requestSmsPermission() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.SEND_SMS), PERMISSION_SEND_SMS)
+    }
+
+    private fun requestWriteExternalPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_WRITE_EXTERNAL_STORAGE)
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -64,6 +90,14 @@ class MainActivity : AppCompatActivity() {
                     notifyDetailFragment(false)
                 }
             }
+            PERMISSION_WRITE_EXTERNAL_STORAGE -> {
+                if(grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    notifyDetailFragment(true)
+                } else {
+                    notifyDetailFragment(false)
+                }
+            }
+
         }
     }
 

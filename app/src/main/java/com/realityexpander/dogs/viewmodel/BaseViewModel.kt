@@ -1,4 +1,4 @@
-package com.devtides.dogs.viewmodel
+package com.realityexpander.dogs.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel

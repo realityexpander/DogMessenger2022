@@ -1,4 +1,4 @@
-package com.devtides.dogs.model
+package com.realityexpander.dogs.model
 
 import androidx.room.Dao
 import androidx.room.Insert

@@ -1,4 +1,4 @@
-package com.devtides.dogs.view
+package com.realityexpander.dogs.view
 
 
 import android.os.Bundle
@@ -9,8 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 
-import com.devtides.dogs.R
-import com.devtides.dogs.viewmodel.ListViewModel
+import com.realityexpander.dogs.R
+import com.realityexpander.dogs.viewmodel.ListViewModel
 import kotlinx.android.synthetic.main.fragment_list.*
 
 

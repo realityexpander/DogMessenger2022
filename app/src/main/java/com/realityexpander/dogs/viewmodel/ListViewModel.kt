@@ -1,14 +1,13 @@
-package com.devtides.dogs.viewmodel
+package com.realityexpander.dogs.viewmodel
 
 import android.app.Application
 import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import com.devtides.dogs.model.DogBreed
-import com.devtides.dogs.model.DogDatabase
-import com.devtides.dogs.model.DogsApiService
-import com.devtides.dogs.util.NotificationsHelper
-import com.devtides.dogs.util.SharedPreferencesHelper
+import com.realityexpander.dogs.model.DogBreed
+import com.realityexpander.dogs.model.DogDatabase
+import com.realityexpander.dogs.model.DogsApiService
+import com.realityexpander.dogs.util.NotificationsHelper
+import com.realityexpander.dogs.util.SharedPreferencesHelper
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver

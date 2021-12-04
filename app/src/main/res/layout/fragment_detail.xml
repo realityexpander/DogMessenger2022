@@ -6,10 +6,10 @@
     <data>
         <variable
                 name="dog"
-                type="com.devtides.dogs.model.DogBreed"/>
+                type="com.realityexpander.dogs.model.DogBreed"/>
         <variable
                 name="palette"
-                type="com.devtides.dogs.model.DogPalette"/>
+                type="com.realityexpander.dogs.model.DogPalette"/>
     </data>
 
     <RelativeLayout

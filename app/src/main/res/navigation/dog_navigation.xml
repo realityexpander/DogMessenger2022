@@ -6,7 +6,7 @@
 
     <fragment
             android:id="@+id/listFragment"
-            android:name="com.devtides.dogs.view.ListFragment"
+            android:name="com.realityexpander.dogs.view.ListFragment"
             android:label="ListFragment">
         <action
                 android:id="@+id/actionDetailFragment"
@@ -19,7 +19,7 @@
     </fragment>
     <fragment
             android:id="@+id/detailFragment"
-            android:name="com.devtides.dogs.view.DetailFragment"
+            android:name="com.realityexpander.dogs.view.DetailFragment"
             android:label="DetailFragment">
         <action
                 android:id="@+id/actionListFragment"
@@ -33,6 +33,6 @@
     </fragment>
     <fragment
             android:id="@+id/settingsFragment"
-            android:name="com.devtides.dogs.view.SettingsFragment"
+            android:name="com.realityexpander.dogs.view.SettingsFragment"
             android:label="SettingsFragment"/>
 </navigation>

@@ -4,10 +4,10 @@
     <data>
         <variable
                 name="dog"
-                type="com.devtides.dogs.model.DogBreed"/>
+                type="com.realityexpander.dogs.model.DogBreed"/>
         <variable
                 name="listener"
-                type="com.devtides.dogs.view.DogClickListener"/>
+                type="com.realityexpander.dogs.view.DogClickListener"/>
     </data>
     <LinearLayout
             android:orientation="horizontal"

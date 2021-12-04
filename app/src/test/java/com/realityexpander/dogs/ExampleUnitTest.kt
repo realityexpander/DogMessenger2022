@@ -1,4 +1,4 @@
-package com.devtides.dogs
+package com.realityexpander.dogs
 
 import org.junit.Test
 

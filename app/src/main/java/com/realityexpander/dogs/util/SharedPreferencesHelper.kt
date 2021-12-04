@@ -1,4 +1,4 @@
-package com.devtides.dogs.util
+package com.realityexpander.dogs.util
 
 import android.content.Context
 import android.content.SharedPreferences

@@ -1,4 +1,4 @@
-package com.devtides.dogs.model
+package com.realityexpander.dogs.model
 
 import io.reactivex.Single
 import retrofit2.http.GET

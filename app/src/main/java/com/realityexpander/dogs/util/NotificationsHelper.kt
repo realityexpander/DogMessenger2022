@@ -1,4 +1,4 @@
-package com.devtides.dogs.util
+package com.realityexpander.dogs.util
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,8 +9,8 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.devtides.dogs.R
-import com.devtides.dogs.view.MainActivity
+import com.realityexpander.dogs.R
+import com.realityexpander.dogs.view.MainActivity
 
 class NotificationsHelper(val context: Context) {
 
