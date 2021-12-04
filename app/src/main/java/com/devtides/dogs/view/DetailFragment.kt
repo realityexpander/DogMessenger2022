@@ -5,31 +5,39 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.telephony.SmsManager
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
+import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.Navigation
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.*
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-
 import com.devtides.dogs.R
 import com.devtides.dogs.databinding.FragmentDetailBinding
 import com.devtides.dogs.databinding.SendSmsDialogBinding
 import com.devtides.dogs.model.DogBreed
 import com.devtides.dogs.model.DogPalette
 import com.devtides.dogs.model.SmsInfo
-import com.devtides.dogs.util.getProgressDrawable
-import com.devtides.dogs.util.loadImage
 import com.devtides.dogs.viewmodel.DetailViewModel
 import kotlinx.android.synthetic.main.fragment_detail.*
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
+import java.util.*
 
+private const val TAG = "DetailFragment"
 
 class DetailFragment : Fragment() {
 
@@ -39,6 +47,7 @@ class DetailFragment : Fragment() {
     private lateinit var dataBinding: FragmentDetailBinding
     private var sendSmsStarted = false
     private var currentDog: DogBreed? = null
+    private var pictureFile: File? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -78,12 +87,14 @@ class DetailFragment : Fragment() {
     private fun setupBackgroundColor(url: String) {
         Glide.with(this)
             .asBitmap()
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .load(url)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onLoadCleared(placeholder: Drawable?) {
                 }
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    storeImage(resource)
                     Palette.from(resource)
                         .generate { palette ->
                             val intColor = palette?.lightMutedSwatch?.rgb ?: 0
@@ -94,6 +105,50 @@ class DetailFragment : Fragment() {
 
             })
     }
+
+    private fun storeImage(image: Bitmap) {
+        pictureFile = getOutputMediaFile()
+        if (pictureFile == null) {
+            Log.d(
+                TAG,
+                "Error creating media file, check storage permissions: "
+            ) // e.getMessage());
+
+            return
+        }
+        try {
+            val fos = FileOutputStream(pictureFile)
+            image.compress(Bitmap.CompressFormat.JPEG, 90, fos)
+            fos.close()
+            Log.d(TAG, "img dir: $pictureFile")
+        } catch (e: FileNotFoundException) {
+            Log.d(TAG, "File not found: " + e.message)
+        } catch (e: IOException) {
+            Log.d(TAG, "Error accessing file: " + e.message)
+        }
+    }
+
+    private fun getOutputMediaFile(): File? {
+        // To be safe, you should check that the SDCard is mounted
+        // using Environment.getExternalStorageState() before doing this.
+        val mediaStorageDir = File(
+            Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "Path")
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null
+            }
+        }
+//        val mediaFile: File
+//        val generator = Random()
+//        var n = 1000
+//        n = generator.nextInt(n)
+//        val mImageName = "Image-$n.jpeg"
+//        mediaFile = File(mediaStorageDir.path + File.separator.toString() + mImageName)
+//        return mediaFile
+        return File(mediaStorageDir.path + File.separator.toString() + "temp_sharing_file.jpeg" )
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
@@ -108,10 +163,19 @@ class DetailFragment : Fragment() {
             }
             R.id.action_share -> {
                 val intent = Intent(Intent.ACTION_SEND)
-                intent.type = "text/plain"
                 intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this dog breed")
                 intent.putExtra(Intent.EXTRA_TEXT, "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}")
-                intent.putExtra(Intent.EXTRA_STREAM, currentDog?.imageUrl)
+                if (pictureFile == null) {
+                    intent.type = "text/plain"
+                } else {
+                    intent.type = "*/*"
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    intent.putExtra(Intent.EXTRA_STREAM,
+                        FileProvider.getUriForFile(dataBinding.root.context,
+                            dataBinding.root.context.applicationContext.packageName + ".provider",
+                            pictureFile!!)
+                    )
+                }
                 startActivity(Intent.createChooser(intent, "Share with"))
             }
         }
