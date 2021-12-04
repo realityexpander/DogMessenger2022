@@ -66,19 +66,19 @@ class DetailFragment : Fragment() {
         }
 
         viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
-        viewModel.fetch(dogUuid)
 
         observeViewModel()
+        viewModel.fetch(dogUuid)
     }
 
     private fun observeViewModel() {
         viewModel.dogLiveData.observe(this, Observer { dog ->
             currentDog = dog
-            dog?.let {
+            dog?.let { dogBreed ->
                 dataBinding.dog = dog
 
-                it.imageUrl?.let {
-                    setupBackgroundColor(it)
+                dogBreed.imageUrl?.let { dogImageUrl ->
+                    setupBackgroundColor(dogImageUrl)
                 }
             }
         })
@@ -90,8 +90,7 @@ class DetailFragment : Fragment() {
             .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
             .load(url)
             .into(object : CustomTarget<Bitmap>() {
-                override fun onLoadCleared(placeholder: Drawable?) {
-                }
+                override fun onLoadCleared(placeholder: Drawable?) {}
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                     storeImage(resource)
