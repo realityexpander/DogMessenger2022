@@ -79,6 +79,8 @@ dependencies {
 
     implementation "com.android.support:multidex:1.0.3"
 
+    implementation 'com.klinkerapps:android-smsmms:5.2.6'
+
 
 
     testImplementation 'junit:junit:4.12'

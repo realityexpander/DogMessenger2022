@@ -30,7 +30,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     fun refresh() {
         checkCacheDuration()
         val updateTime = prefHelper.getUpdateTime()
-        if(updateTime != null && updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
+        if(updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
@@ -41,7 +41,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         val cachePreference = prefHelper.getCacheDuration()
 
         try {
-            val cachePreferenceInt = cachePreference?.toInt() ?: 5 * 60
+            val cachePreferenceInt = cachePreference.toInt() ?: 0
             refreshTime = cachePreferenceInt.times(1000 * 1000 * 1000L)
         } catch (e: NumberFormatException) {
             e.printStackTrace()

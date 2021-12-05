@@ -1,16 +1,24 @@
 package com.realityexpander.dogs.view
 
 
+import android.Manifest
 import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.provider.Telephony
 import android.telephony.SmsManager
+import android.telephony.TelephonyManager
 import android.util.Log
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -21,6 +29,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.klinker.android.send_message.*
 import com.realityexpander.dogs.R
 import com.realityexpander.dogs.databinding.FragmentDetailBinding
 import com.realityexpander.dogs.databinding.SendSmsDialogBinding
@@ -32,6 +41,7 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
+
 
 private const val TAG = "DetailFragment"
 
@@ -45,6 +55,7 @@ class DetailFragment : Fragment() {
     private var shareImageStarted = false
     private var currentDog: DogBreed? = null
     private var pictureFile: File? = null
+    private var pictureBitmap: Bitmap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -90,6 +101,7 @@ class DetailFragment : Fragment() {
                 override fun onLoadCleared(placeholder: Drawable?) {}
 
                 override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    pictureBitmap = resource
                     storeImage(resource)
                     Palette.from(resource)
                         .generate { palette ->
@@ -123,7 +135,6 @@ class DetailFragment : Fragment() {
             Log.d(TAG, "Error accessing file: " + e.message)
         }
     }
-
     private fun getOutputMediaFile(): File? {
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
@@ -151,6 +162,7 @@ class DetailFragment : Fragment() {
         inflater.inflate(R.menu.detail_menu, menu)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_send_sms -> {
@@ -166,32 +178,71 @@ class DetailFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
+    @RequiresApi(Build.VERSION_CODES.KITKAT)
+    private fun checkOrSetDefaultSmsApp(): Boolean {
+
+        if (!dataBinding.root.context.packageName
+                .equals(Telephony.Sms.getDefaultSmsPackage(dataBinding.root.context))) {
+
+            val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+            intent.putExtra(
+                Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                dataBinding.root.context.packageName
+            )
+            startActivity(intent)
+            return false
+
+//            val roleManager = getSystemService(RoleManager::class.java)
+//            val roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
+//            startActivityForResult(roleRequestIntent, 12)
+//            return false
+        }
+
+        return true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun onPermissionResult(permissionGranted: Boolean) {
         if (sendSmsStarted && permissionGranted) {
             sendSmsStarted = false
-            context?.let {
-                val smsInfo =
-                    SmsInfo("", "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}", currentDog?.imageUrl)
 
-                val dialogBinding = DataBindingUtil.inflate<SendSmsDialogBinding>(
-                    LayoutInflater.from(it),
-                    R.layout.send_sms_dialog,
-                    null,
-                    false
-                )
+            if (checkOrSetDefaultSmsApp()) {
 
-                AlertDialog.Builder(it)
-                    .setView(dialogBinding.root)
-                    .setPositiveButton("Send SMS") {dialog, which ->
-                        if(!dialogBinding.smsDestination.text.isNullOrEmpty()) {
-                            smsInfo.to = dialogBinding.smsDestination.text.toString()
-                            sendSms(smsInfo)
+                context?.let {
+                    val smsInfo = SmsInfo("",
+                        text = "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}",
+                        subject = "",
+                        imageUrl = currentDog?.imageUrl,
+                        imageUri = pictureFile?.let {
+                            FileProvider.getUriForFile(
+                                dataBinding.root.context,
+                                dataBinding.root.context.applicationContext.packageName + ".provider",
+                                pictureFile!!
+                            )
                         }
-                    }
-                    .setNegativeButton("Cancel") {dialog, which -> }
-                    .show()
+                    )
 
-                dialogBinding.smsInfo = smsInfo
+                    val dialogBinding = DataBindingUtil.inflate<SendSmsDialogBinding>(
+                        LayoutInflater.from(it),
+                        R.layout.send_sms_dialog,
+                        null,
+                        false
+                    )
+
+                    AlertDialog.Builder(it)
+                        .setView(dialogBinding.root)
+                        .setPositiveButton("Send SMS") { dialog, which ->
+                            if (!dialogBinding.smsDestination.text.isNullOrEmpty()) {
+                                smsInfo.to = dialogBinding.smsDestination.text.toString()
+                                smsInfo.subject = "Dogs Yo!"
+                                sendSms(smsInfo)
+                            }
+                        }
+                        .setNegativeButton("Cancel") { dialog, which -> }
+                        .show()
+
+                    dialogBinding.smsInfo = smsInfo
+                }
             }
         }
 
@@ -215,11 +266,70 @@ class DetailFragment : Fragment() {
         }
     }
 
+
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun sendSms(smsInfo: SmsInfo) {
         val intent = Intent(context, MainActivity::class.java)
         val pi = PendingIntent.getActivity(context, 0, intent, 0)
         val sms = SmsManager.getDefault()
         sms.sendTextMessage(smsInfo.to, null, smsInfo.text, pi, null)
+
+
+        smsInfo.imageUri?.let {
+
+            Thread {
+                val sendSettings = Settings()
+                val settings = Settings()
+                sendSettings.mmsc = settings.mmsc
+                sendSettings.proxy = settings.proxy
+                sendSettings.port = settings.port
+                sendSettings.useSystemSending = true // must be set to true to send
+                val transaction = Transaction(dataBinding.root.context, sendSettings)
+                val message = Message(smsInfo.text, smsInfo.to)
+                message.fromAddress = Utils.getMyPhoneNumber(dataBinding.root.context)
+                message.save = true // must be true to send
+
+                // message.messageUri = smsInfo.imageUri // does not work
+                // This may help: https://stackoverflow.com/questions/61686704/android-sending-mms-programmatically-without-being-default-app
+                // https://github.com/DrBrad/android-smsmms/network
+                // https://github.com/DrBrad
+
+                message.setImage(pictureBitmap)
+//                message.setImage(BitmapFactory.decodeResource(dataBinding.root.context.resources, R.drawable.common_full_open_on_phone))
+                transaction.sendNewMessage(message, Transaction.NO_THREAD_ID)
+            }.start()
+        }
+
+
+    }
+
+    private fun getSimNumber(context: Context): String {
+        val telephonyManager = context.getSystemService(
+            Context.TELEPHONY_SERVICE
+        ) as TelephonyManager
+
+        return if (ActivityCompat.checkSelfPermission(
+                dataBinding.root.context,
+                Manifest.permission.READ_SMS
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                dataBinding.root.context,
+                Manifest.permission.READ_PHONE_NUMBERS
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                dataBinding.root.context,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            ""
+        } else
+            telephonyManager.line1Number
     }
 
 }

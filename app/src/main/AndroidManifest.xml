@@ -3,9 +3,26 @@
           package="com.realityexpander.dogs">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.SEND_SMS"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <!-- for sendSMS/MMS-->
+<!--    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS" // needed? />-->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_MMS" />
+    <uses-permission android:name="android.provider.Telephony.SMS_RECEIVED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature
+            android:glEsVersion="0x00020000"
+            android:required="true" />
 
     <application
             android:name="androidx.multidex.MultiDexApplication"
@@ -15,13 +32,30 @@
             android:roundIcon="@mipmap/ic_dog_icon_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name="com.realityexpander.dogs.view.MainActivity">
+        <activity android:name="com.realityexpander.dogs.view.MainActivity"
+                android:label="Dog Messaging">
+
+            <!-- for sendSMS/MMS-->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <action android:name="android.intent.action.SENDTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
-
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- To access media on device-->
         <provider
                 android:name="androidx.core.content.FileProvider"
                 android:authorities="${applicationId}.provider"
@@ -31,6 +65,55 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/provider_paths" />
         </provider>
+
+
+
+
+        <!-- for sendSMS/MMS-->
+        <receiver
+                android:name="com.realityexpander.dogs.util.SmsReceiver"
+                android:permission="android.permission.BROADCAST_SMS"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+            </intent-filter>
+        </receiver>
+        <receiver
+                android:name="com.realityexpander.dogs.util.MmsReceiver"
+                android:permission="android.permission.BROADCAST_WAP_PUSH"
+                android:exported="true">
+            <intent-filter>
+                <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+                <data android:mimeType="application/vnd.wap.mms-message" />
+            </intent-filter>
+        </receiver>
+        <receiver
+                android:name="com.klinker.android.send_message.MmsSentReceiver"
+                android:taskAffinity="com.klinker.android.messaging.MMS_SENT"/>
+        <receiver
+                android:name="com.klinker.android.send_message.MmsReceivedReceiver"
+                android:taskAffinity="com.klinker.android.messaging.MMS_RECEIVED" />
+        <service android:name="com.android.mms.transaction.TransactionService" />
+        <receiver
+                android:name="com.realityexpander.dogs.util.MmsReceivedReceiverImpl"
+                android:taskAffinity="com.klinker.android.messaging.MMS_RECEIVED"/>
+        <service
+                android:name="com.realityexpander.dogs.util.HeadlessSmsSendService"
+                android:exported="true"
+                android:permission="android.permission.SEND_RESPOND_VIA_MESSAGE" >
+            <intent-filter>
+                <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="sms" />
+                <data android:scheme="smsto" />
+                <data android:scheme="mms" />
+                <data android:scheme="mmsto" />
+            </intent-filter>
+        </service>
+
+
+
     </application>
 
 </manifest>
+

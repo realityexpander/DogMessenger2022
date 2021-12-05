@@ -1,5 +1,6 @@
 package com.realityexpander.dogs.model
 
+import android.net.Uri
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -41,7 +42,9 @@ data class DogBreed(
 data class DogPalette(var color: Int)
 
 data class SmsInfo(
-    var to: String,
-    var text: String,
-    var imageUrl: String?
+    var to: String = "",
+    var text: String = "",
+    var subject: String = "",
+    var imageUrl: String?,
+    val imageUri: Uri?
 )
