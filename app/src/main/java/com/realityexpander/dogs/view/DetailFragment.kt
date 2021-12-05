@@ -6,8 +6,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -167,7 +169,7 @@ class DetailFragment : Fragment() {
         when (item.itemId) {
             R.id.action_send_sms -> {
                 sendSmsStarted = true
-                (activity as MainActivity).checkSmsPermission()
+                (activity as MainActivity).checkSmsPermission() // send from our app, must be set as default SMS tho!
             }
             R.id.action_share -> {
                 shareImageStarted = true
@@ -200,6 +202,7 @@ class DetailFragment : Fragment() {
 
         return true
     }
+
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun onPermissionResult(permissionGranted: Boolean) {
@@ -248,24 +251,78 @@ class DetailFragment : Fragment() {
 
         if(shareImageStarted && permissionGranted) {
             shareImageStarted = false
-            val intent = Intent(Intent.ACTION_SEND)
-            intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this dog breed")
-            intent.putExtra(Intent.EXTRA_TEXT, "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}")
-            if (pictureFile == null) {
-                intent.type = "text/plain"
-            } else {
-                intent.type = "*/*"
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.putExtra(Intent.EXTRA_STREAM,
-                    FileProvider.getUriForFile(dataBinding.root.context,
-                        dataBinding.root.context.applicationContext.packageName + ".provider",
-                        pictureFile!!)
+
+            val sharingStyle = 1
+
+            val imageUri = pictureFile?.let {
+                FileProvider.getUriForFile(
+                    dataBinding.root.context,
+                    dataBinding.root.context.packageName + ".provider",
+                    pictureFile!!
                 )
             }
-            startActivity(Intent.createChooser(intent, "Share with"))
+
+            when (sharingStyle) {
+                // "Send" style - More selective for SMS apps
+                1 -> {
+
+                    // ACTION_SEND - lets user pick the app - *USE THIS ONE*
+                    // ACTION_SENDTO - uses the default app and no user choice, note: often has no-op (unknown why)
+                    val intent = Intent(Intent.ACTION_SEND)
+                    intent.data =
+                        Uri.parse("smsto:")  // This ensures only SMS apps respond, but doesnt matter "to" or no "to"
+                    intent.type =
+                        "image/jpeg"  // type *must* match the image format, or it only sends the text & ignores the image
+                    intent.putExtra(
+                        "sms_body",
+                        "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}"
+                    )
+                    intent.putExtra("subject", "Check out this dog breed")
+                    intent.putExtra(Intent.EXTRA_STREAM, imageUri)
+                    if (intent.resolveActivity(dataBinding.root.context.packageManager) != null) {
+                        startActivity(intent)
+                    }
+                }
+
+                // "Share" style, type="*/*" is ok
+                2 -> {
+                    val intent = Intent(Intent.ACTION_SEND)
+                    intent.data = Uri.parse("smsto:")
+                    intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this dog breed")
+                    intent.putExtra(
+                        Intent.EXTRA_TEXT, "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}"
+                    )
+                    val chooser = Intent.createChooser(intent, "Share Dog")
+
+                    if (pictureFile == null) {
+                        intent.type = "text/plain"
+                    } else {
+                        intent.type = "*/*"
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                        val imageUri = FileProvider.getUriForFile(
+//                            dataBinding.root.context,
+//                            dataBinding.root.context.applicationContext.packageName + ".provider",
+//                            pictureFile!!
+//                        )
+                        intent.putExtra(Intent.EXTRA_STREAM, imageUri)
+
+                        // Grant permissions
+                        val resInfoList: List<ResolveInfo> = dataBinding.root.context.packageManager
+                            .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+                        for (resolveInfo in resInfoList) {
+                            val packageName = resolveInfo.activityInfo.packageName
+                            dataBinding.root.context.grantUriPermission(
+                                packageName,
+                                imageUri,
+                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            )
+                        }
+                    }
+                    startActivity(chooser)
+                }
+            }
         }
     }
-
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
