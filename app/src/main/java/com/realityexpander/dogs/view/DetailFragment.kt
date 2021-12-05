@@ -252,8 +252,8 @@ class DetailFragment : Fragment() {
         if(shareImageStarted && permissionGranted) {
             shareImageStarted = false
 
-            val sharingStyle = 1
-
+            val message = "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}"
+            val subject = "Check out this dog breed"
             val imageUri = pictureFile?.let {
                 FileProvider.getUriForFile(
                     dataBinding.root.context,
@@ -262,65 +262,71 @@ class DetailFragment : Fragment() {
                 )
             }
 
+            val sharingStyle = 2
             when (sharingStyle) {
                 // "Send" style - More selective for SMS apps
                 1 -> {
-
-                    // ACTION_SEND - lets user pick the app - *USE THIS ONE*
-                    // ACTION_SENDTO - uses the default app and no user choice, note: often has no-op (unknown why)
-                    val intent = Intent(Intent.ACTION_SEND)
-                    intent.data =
-                        Uri.parse("smsto:")  // This ensures only SMS apps respond, but doesnt matter "to" or no "to"
-                    intent.type =
-                        "image/jpeg"  // type *must* match the image format, or it only sends the text & ignores the image
-                    intent.putExtra(
-                        "sms_body",
-                        "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}"
-                    )
-                    intent.putExtra("subject", "Check out this dog breed")
-                    intent.putExtra(Intent.EXTRA_STREAM, imageUri)
-                    if (intent.resolveActivity(dataBinding.root.context.packageManager) != null) {
-                        startActivity(intent)
-                    }
+                    shareMessageAndImageSMS(message, subject, imageUri = imageUri)
                 }
 
                 // "Share" style, type="*/*" is ok
                 2 -> {
-                    val intent = Intent(Intent.ACTION_SEND)
-                    intent.data = Uri.parse("smsto:")
-                    intent.putExtra(Intent.EXTRA_SUBJECT, "Check out this dog breed")
-                    intent.putExtra(
-                        Intent.EXTRA_TEXT, "${currentDog?.dogBreed} bred for ${currentDog?.bredFor}"
-                    )
-                    val chooser = Intent.createChooser(intent, "Share Dog")
-
-                    if (pictureFile == null) {
-                        intent.type = "text/plain"
-                    } else {
-                        intent.type = "*/*"
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                        val imageUri = FileProvider.getUriForFile(
-//                            dataBinding.root.context,
-//                            dataBinding.root.context.applicationContext.packageName + ".provider",
-//                            pictureFile!!
-//                        )
-                        intent.putExtra(Intent.EXTRA_STREAM, imageUri)
-
-                        // Grant permissions
-                        val resInfoList: List<ResolveInfo> = dataBinding.root.context.packageManager
-                            .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
-                        for (resolveInfo in resInfoList) {
-                            val packageName = resolveInfo.activityInfo.packageName
-                            dataBinding.root.context.grantUriPermission(
-                                packageName,
-                                imageUri,
-                                Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
-                            )
-                        }
-                    }
-                    startActivity(chooser)
+                    shareMessageAndImageAndroid(message, subject, imageUri = imageUri)
                 }
             }
+        }
+    }
+
+    private fun shareMessageAndImageAndroid(
+        subject: String = "",
+        message: String = "",
+        phoneNumber: String = "",
+        imageUri: Uri?
+    ) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_TEXT, message)
+        intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        intent.data = Uri.parse("smsto:$phoneNumber")
+        val chooser = Intent.createChooser(intent, "Share Dog")
+
+        if (pictureFile == null) {
+            intent.type = "text/plain"
+        } else {
+            intent.type = "*/*"
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.putExtra(Intent.EXTRA_STREAM, imageUri)
+
+            // Grant permissions
+            val resInfoList: List<ResolveInfo> = dataBinding.root.context.packageManager
+                .queryIntentActivities(chooser, PackageManager.MATCH_DEFAULT_ONLY)
+            for (resolveInfo in resInfoList) {
+                val packageName = resolveInfo.activityInfo.packageName
+                dataBinding.root.context.grantUriPermission(
+                    packageName,
+                    imageUri,
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+        }
+        startActivity(chooser)
+    }
+
+    private fun shareMessageAndImageSMS(
+        message: String = "",
+        subject: String = "",
+        phoneNumber: String = "",
+        imageUri: Uri?
+    ) {
+        // ACTION_SEND - lets user pick the app - *USE THIS ONE*
+        // ACTION_SENDTO - uses the default app and no user choice, note: often has no-op (unknown why)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.data = Uri.parse("smsto:$phoneNumber")  // This ensures only SMS apps respond, but doesnt matter "to" or no "to"
+        intent.type = "image/jpeg"  // type *must* match the image format, or it only sends text
+        intent.putExtra("sms_body", message)
+        intent.putExtra("subject", subject)
+        intent.putExtra(Intent.EXTRA_STREAM, imageUri)
+        if (intent.resolveActivity(dataBinding.root.context.packageManager) != null) {
+            startActivity(intent)
         }
     }
 
@@ -331,7 +337,6 @@ class DetailFragment : Fragment() {
         val pi = PendingIntent.getActivity(context, 0, intent, 0)
         val sms = SmsManager.getDefault()
         sms.sendTextMessage(smsInfo.to, null, smsInfo.text, pi, null)
-
 
         smsInfo.imageUri?.let {
 
