@@ -1,4 +1,4 @@
-package com.realityexpander.dogs.util
+package com.realityexpander.dogs.util.mms
 
 import android.app.Notification
 import android.content.BroadcastReceiver

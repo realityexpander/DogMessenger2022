@@ -1,4 +1,4 @@
-package com.realityexpander.dogs.util
+package com.realityexpander.dogs.util.mms
 
 import com.android.mms.transaction.PushReceiver
 
