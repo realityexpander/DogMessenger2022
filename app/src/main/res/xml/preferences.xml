@@ -9,8 +9,20 @@
             android:singleLine="true"
             android:inputType="number"
             android:title="Cache duration in seconds"
-            android:key="pref_cache_duration"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:allowDividerBelow="true"
+            android:summary="Sets how long to get data from cache versus network."
+            android:key="pref_cache_duration" />
+
+    <EditTextPreference
+            app:useSimpleSummaryProvider="true"
+            android:singleLine="false"
+            android:title="Last Updated at:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:key="pref_last_updated_time_datestring"
+            app:enableCopying="true"
+            app:selectable="false" />
 
 </PreferenceScreen>

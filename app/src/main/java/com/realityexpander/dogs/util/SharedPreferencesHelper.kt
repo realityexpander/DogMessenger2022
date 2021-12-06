@@ -4,12 +4,15 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.preference.PreferenceManager
 import androidx.core.content.edit
+import androidx.core.text.isDigitsOnly
 
 class SharedPreferencesHelper {
 
     companion object {
 
-        private const val PREF_TIME = "Pref time"
+        private const val PREF_LAST_UPDATED_TIME = "pref_last_updated_time"
+        private const val PREF_LAST_UPDATED_TIME_DATESTRING = "pref_last_updated_time_datestring"
+        private const val PREF_CACHE_DURATION = "pref_cache_duration"
         private var prefs: SharedPreferences? = null
 
         @Volatile private var instance: SharedPreferencesHelper? = null
@@ -27,11 +30,32 @@ class SharedPreferencesHelper {
         }
     }
 
-    fun saveUpdateTime(time: Long) {
-        prefs?.edit(commit = true) { putLong(PREF_TIME, time) }
+    fun saveLastUpdatedTime(time: Long) {
+        prefs?.edit(commit = true) {
+            putLong(PREF_LAST_UPDATED_TIME, time)
+
+            val dateString = time.getDateString()
+            putString(PREF_LAST_UPDATED_TIME_DATESTRING, dateString)
+        }
     }
 
-    fun getUpdateTime() = prefs?.getLong(PREF_TIME, 0) ?: 0
+    fun getUpdateTime(): Long {
+        val prefLong = prefs?.getLong(PREF_LAST_UPDATED_TIME,  0L) ?: 0L
 
-    fun getCacheDuration() = prefs?.getString("pref_cache_duration", "5") ?: "5"
+        return prefLong.toLong().coerceIn(0, 10000)
+    }
+
+    fun saveCacheDuration(duration: Int) {
+        prefs?.edit(commit = true) { putString(PREF_CACHE_DURATION, duration.toString()) }
+    }
+
+    fun getCacheDuration(): Int {
+        val prefString = prefs?.getString(PREF_CACHE_DURATION, "5") ?: "5"
+        if(prefString.isDigitsOnly()) return prefString.toInt().coerceIn(0, 10000)
+
+        // save a default value if validation fails
+        val defaultValue = 5
+        saveCacheDuration(defaultValue)
+        return defaultValue
+    }
 }

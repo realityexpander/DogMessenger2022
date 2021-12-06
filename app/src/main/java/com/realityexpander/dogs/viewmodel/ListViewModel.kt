@@ -38,11 +38,10 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     }
 
     private fun checkCacheDuration() {
-        val cachePreference = prefHelper.getCacheDuration()
+        val cacheDuration = prefHelper.getCacheDuration()
 
         try {
-            val cachePreferenceInt = cachePreference.toInt() ?: 0
-            refreshTime = cachePreferenceInt.times(1000 * 1000 * 1000L)
+            refreshTime = cacheDuration.times(1000 * 1000 * 1000L)
         } catch (e: NumberFormatException) {
             e.printStackTrace()
         }
@@ -103,7 +102,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
             }
             dogsRetrieved(list)
         }
-        prefHelper.saveUpdateTime(System.nanoTime())
+        prefHelper.saveLastUpdatedTime(System.currentTimeMillis())
     }
 
     override fun onCleared() {
