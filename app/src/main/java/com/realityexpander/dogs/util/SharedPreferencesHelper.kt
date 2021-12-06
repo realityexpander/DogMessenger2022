@@ -30,17 +30,19 @@ class SharedPreferencesHelper {
         }
     }
 
+
     fun saveLastUpdatedTime(time: Long) {
         prefs?.edit(commit = true) {
             putLong(PREF_LAST_UPDATED_TIME, time)
 
+            // For display in preferences
             val dateString = time.getDateString()
             putString(PREF_LAST_UPDATED_TIME_DATESTRING, dateString)
         }
     }
 
-    fun getUpdateTime(): Long {
-        val prefLong = prefs?.getLong(PREF_LAST_UPDATED_TIME,  0L) ?: 0L
+    fun getLastUpdatedTime(): Long {
+        val prefLong = prefs?.getLong(PREF_LAST_UPDATED_TIME,  System.currentTimeMillis()) ?: System.currentTimeMillis()
 
         return prefLong.toLong().coerceIn(0, 10000)
     }

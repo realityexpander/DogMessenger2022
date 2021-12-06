@@ -29,7 +29,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
 
     fun refresh() {
         checkCacheDuration()
-        val updateTime = prefHelper.getUpdateTime()
+        val updateTime = prefHelper.getLastUpdatedTime()
         if(updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
             fetchFromDatabase()
         } else {

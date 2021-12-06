@@ -17,6 +17,7 @@
                 android:id="@+id/actionSettings"
                 app:destination="@id/settingsFragment"/>
     </fragment>
+
     <fragment
             android:id="@+id/detailFragment"
             android:name="com.realityexpander.dogs.view.DetailFragment"
@@ -31,6 +32,7 @@
             android:defaultValue="0"
             app:argType="integer"/>
     </fragment>
+
     <fragment
             android:id="@+id/settingsFragment"
             android:name="com.realityexpander.dogs.view.SettingsFragment"
