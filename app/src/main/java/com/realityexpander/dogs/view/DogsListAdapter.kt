@@ -3,6 +3,8 @@ package com.realityexpander.dogs.view
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.Navigation
@@ -11,6 +13,7 @@ import com.realityexpander.dogs.R
 import com.realityexpander.dogs.databinding.ItemDogBinding
 import com.realityexpander.dogs.model.DogBreed
 import kotlinx.android.synthetic.main.fragment_detail.view.*
+import kotlinx.android.synthetic.main.fragment_list.view.*
 import kotlinx.android.synthetic.main.item_dog.view.*
 
 class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
@@ -46,7 +49,9 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
 
     override fun onDogNameClicked(v: View) {
         val name = v.name.text.toString()
-        Toast.makeText(v.context, "clicked on the dog named $name", Toast.LENGTH_SHORT).show()
+        val lifespan = (v.parent.parent as ViewGroup).findViewById<TextView>(R.id.lifespan).text.toString()
+        // to look up a value in the dogsList array, the index needs to be set on a hidden layout TextView.
+        Toast.makeText(v.context, "clicked on the dog named $name, $lifespan", Toast.LENGTH_SHORT).show()
     }
 
     class DogViewHolder(var view: ItemDogBinding) : RecyclerView.ViewHolder(view.root)
