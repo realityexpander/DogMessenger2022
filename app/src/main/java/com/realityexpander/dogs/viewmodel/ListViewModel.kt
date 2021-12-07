@@ -13,12 +13,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
-import java.lang.NumberFormatException
 
 class ListViewModel(application: Application): BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
-    private var refreshTime = 5 * 60 * 1000 * 1000 * 1000L
+    private var cacheRefreshInterval = 5 * 60 * 1_000
 
     private val dogsService = DogsApiService()
     private val disposable = CompositeDisposable()
@@ -28,23 +27,18 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     val loading = MutableLiveData<Boolean>()
 
     fun refresh() {
-        checkCacheDuration()
-        val updateTime = prefHelper.getLastUpdatedTime()
-        if(updateTime != 0L && System.nanoTime() - updateTime < refreshTime) {
+        checkCacheRefreshInterval()
+        val lastUpdatedTime = prefHelper.getLastUpdatedTime()
+
+        if(lastUpdatedTime != 0L && System.currentTimeMillis() - lastUpdatedTime < cacheRefreshInterval) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
         }
     }
 
-    private fun checkCacheDuration() {
-        val cacheDuration = prefHelper.getCacheDuration()
-
-        try {
-            refreshTime = cacheDuration.times(1000 * 1000 * 1000L)
-        } catch (e: NumberFormatException) {
-            e.printStackTrace()
-        }
+    private fun checkCacheRefreshInterval() {
+        cacheRefreshInterval = prefHelper.getCacheRefreshInterval() * 1_000
     }
 
     fun refreshBypassCache() {
@@ -53,6 +47,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
 
     private fun fetchFromDatabase() {
         loading.value = true
+
         launch {
             val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
             dogsRetrieved(dogs)
@@ -62,6 +57,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
 
     private fun fetchFromRemote() {
         loading.value = true
+
         disposable.add(
             dogsService.getDogs()
                 .subscribeOn(Schedulers.newThread())
@@ -109,4 +105,15 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         super.onCleared()
         disposable.clear()
     }
+}
+
+// Spread operator - takes a Array, passes to vararg with spread(*) operator
+fun main() {
+    val x = listOf("123","456","789").toTypedArray()
+
+    fun varArgFun(vararg arg:String) {
+        arg.forEach { println(it) }
+    }
+
+    varArgFun(*x)
 }

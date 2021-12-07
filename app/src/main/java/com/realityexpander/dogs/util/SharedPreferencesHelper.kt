@@ -44,20 +44,20 @@ class SharedPreferencesHelper {
     fun getLastUpdatedTime(): Long {
         val prefLong = prefs?.getLong(PREF_LAST_UPDATED_TIME,  System.currentTimeMillis()) ?: System.currentTimeMillis()
 
-        return prefLong.toLong().coerceIn(0, 10000)
+        return prefLong
     }
 
-    fun saveCacheDuration(duration: Int) {
+    fun saveCacheRefreshInterval(duration: Int) {
         prefs?.edit(commit = true) { putString(PREF_CACHE_DURATION, duration.toString()) }
     }
 
-    fun getCacheDuration(): Int {
+    fun getCacheRefreshInterval(): Int {
         val prefString = prefs?.getString(PREF_CACHE_DURATION, "5") ?: "5"
-        if(prefString.isDigitsOnly()) return prefString.toInt().coerceIn(0, 10000)
+        if(prefString.isDigitsOnly()) return prefString.toInt().coerceIn(0, 100_000)
 
         // save a default value if validation fails
         val defaultValue = 5
-        saveCacheDuration(defaultValue)
+        saveCacheRefreshInterval(defaultValue)
         return defaultValue
     }
 }

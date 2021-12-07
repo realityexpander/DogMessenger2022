@@ -6,10 +6,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity
+@Entity  // defaults table name to the name of class
 data class DogBreed(
-    @ColumnInfo(name = "breed_id")
-    @SerializedName("id")
+    @ColumnInfo(name = "breed_id")  // For Database
+    @SerializedName("id")    // For API
     val breedId: String?,
 
     @ColumnInfo(name = "dog_name")
@@ -35,7 +35,7 @@ data class DogBreed(
     @SerializedName("url")
     val imageUrl: String?
 ) {
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey(autoGenerate = true) // so dont need to use with constructor, but Room will create a key automatically
     var uuid: Int = 0
 }
 
