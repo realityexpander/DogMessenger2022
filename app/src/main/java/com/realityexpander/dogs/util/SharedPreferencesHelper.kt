@@ -32,7 +32,7 @@ class SharedPreferencesHelper {
     }
 
     fun getLastUpdatedTimeMs(): Long {
-        val timeMs = prefs?.getLong(PREF_LAST_UPDATED_TIME,  System.currentTimeMillis()) ?: System.currentTimeMillis()
+        val timeMs = prefs?.getLong(PREF_LAST_UPDATED_TIME, System.currentTimeMillis()) ?: System.currentTimeMillis()
 
         return timeMs
     }
@@ -42,11 +42,11 @@ class SharedPreferencesHelper {
             putLong(PREF_LAST_UPDATED_TIME, timeMs)
 
             // For display in preferences
-            val lastUpdatedTimeDateString = timeMs.getDateString()
+            val lastUpdatedTimeDateString = timeMs.getDateStringWithSeconds()
             putString(PREF_LAST_UPDATED_TIME_DATESTRING, lastUpdatedTimeDateString)
 
             // For display in preferences
-            val nextUpdateTimeDateString = (timeMs + getCacheRefreshIntervalSeconds().times(1_000)).getDateString()
+            val nextUpdateTimeDateString = (timeMs + getCacheRefreshIntervalSeconds().times(1_000)).getDateStringWithSeconds()
             putString(PREF_NEXT_UPDATE_TIME_DATESTRING, nextUpdateTimeDateString)
 
         }

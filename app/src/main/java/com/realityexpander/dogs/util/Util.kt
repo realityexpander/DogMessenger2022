@@ -47,6 +47,15 @@ fun Long?.getDateString(): String {
     return sdf.format(resultDate)
 }
 
+fun Long?.getDateStringWithSeconds(): String {
+    var dateLong: Long? = this ?: return "unknown date"
+
+    val sdf = SimpleDateFormat("EEE MMM dd, yyyy hh:mm:ss a", Locale.US)
+    val resultDate = Date(dateLong!!)
+
+    return sdf.format(resultDate)
+}
+
 /**
  * Swaps the order of the elements of the given [Pair] in a type-safe manner.
  *

@@ -3,16 +3,32 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<!--    <SeekBarPreference-->
+<!--            app:useSimpleSummaryProvider="true"-->
+<!--            android:max="10000"-->
+<!--            app:min="0"-->
+<!--            app:updatesContinuously="true"-->
+<!--            app:showSeekBarValue="true"-->
+<!--            android:defaultValue="500"-->
+<!--            android:selectAllOnFocus="true"-->
+<!--            android:singleLine="true"-->
+<!--            android:inputType="phone"-->
+<!--            android:title="Cache duration in seconds"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:summary="Sets how long to get data from cache versus network."-->
+<!--             />-->
+
+    <!-- Cant force this control to a number -->
     <EditTextPreference
             app:useSimpleSummaryProvider="true"
             android:defaultValue="5"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:inputType="number"
+            android:inputType="phone"
             android:title="Cache duration in seconds"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:allowDividerBelow="true"
             android:summary="Sets how long to get data from cache versus network."
             android:key="pref_cache_duration" />
 
@@ -23,6 +39,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:key="pref_last_updated_time_datestring"
+            app:allowDividerAbove="true"
             app:enableCopying="true"
             app:selectable="false" />
 
