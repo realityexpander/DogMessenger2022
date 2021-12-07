@@ -64,9 +64,6 @@
                     android:resource="@xml/provider_paths" />
         </provider>
 
-
-
-
         <!-- for sendSMS/MMS-->
         <receiver
                 android:name="com.realityexpander.dogs.util.mms.SmsReceiver"

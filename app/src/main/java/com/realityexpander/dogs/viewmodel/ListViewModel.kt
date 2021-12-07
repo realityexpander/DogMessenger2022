@@ -90,7 +90,8 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         launch {
             val dao = DogDatabase(getApplication()).dogDao()
             dao.deleteAllDogs()
-            val result = dao.insertAll(*list.toTypedArray())
+//            val result = dao.insertAll(*list.toTypedArray()) // use spread operator
+            val result = dao.insertAll2(list) // use plain list
             var i = 0
             while (i < list.size) {
                 list[i].uuid = result[i].toInt()

@@ -10,6 +10,7 @@
         <variable
                 name="palette"
                 type="com.realityexpander.dogs.model.DogPalette"/>
+
     </data>
 
     <RelativeLayout
@@ -17,6 +18,7 @@
             android:layout_height="match_parent"
             android:background="@{palette.color}"
             tools:context=".view.DetailFragment">
+<!--            android:onClick="@{listener::onDogClicked}"-->
 
         <ImageView
                 android:id="@+id/dogImage"
@@ -25,7 +27,8 @@
                 android:layout_alignParentTop="true"
                 android:imageUrl="@{dog.imageUrl}"
                 android:scaleType="fitCenter"
-                android:minHeight="200dp"/>
+                android:minHeight="200dp"
+                tools:src="@drawable/dog_icon"/>
 
         <TextView
                 android:id="@+id/dogName"
@@ -35,6 +38,7 @@
                 android:text="@{dog.dogBreed}"
                 style="@style/Title"
                 android:layout_centerHorizontal="true"
+                tools:text="Dog Name"
                 android:layout_margin="4dp"/>
 
         <TextView
@@ -45,6 +49,7 @@
                 android:text="@{dog.bredFor}"
                 style="@style/Text"
                 android:layout_centerHorizontal="true"
+                tools:text="Dog Purpose"
                 android:layout_margin="4dp"/>
 
         <TextView
@@ -55,6 +60,7 @@
                 android:text="@{dog.temperament}"
                 style="@style/Text"
                 android:layout_centerHorizontal="true"
+                tools:text="Dog Temperament"
                 android:layout_margin="4dp"/>
 
         <TextView
@@ -65,6 +71,7 @@
                 android:text="@{dog.lifeSpan}"
                 style="@style/Text"
                 android:layout_centerHorizontal="true"
+                tools:text="15 years"
                 android:layout_margin="4dp"/>
 
     </RelativeLayout>
