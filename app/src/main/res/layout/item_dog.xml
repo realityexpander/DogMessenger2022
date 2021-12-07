@@ -9,6 +9,7 @@
                 name="listener"
                 type="com.realityexpander.dogs.view.DogClickListener"/>
     </data>
+
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"

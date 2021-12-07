@@ -18,7 +18,6 @@
             android:layout_height="match_parent"
             android:background="@{palette.color}"
             tools:context=".view.DetailFragment">
-<!--            android:onClick="@{listener::onDogClicked}"-->
 
         <ImageView
                 android:id="@+id/dogImage"
