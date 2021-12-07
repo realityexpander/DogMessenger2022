@@ -26,4 +26,14 @@
             app:enableCopying="true"
             app:selectable="false" />
 
+    <EditTextPreference
+            app:useSimpleSummaryProvider="true"
+            android:singleLine="false"
+            android:title="Next Update at:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:key="pref_next_update_time_datestring"
+            app:enableCopying="true"
+            app:selectable="false" />
+
 </PreferenceScreen>

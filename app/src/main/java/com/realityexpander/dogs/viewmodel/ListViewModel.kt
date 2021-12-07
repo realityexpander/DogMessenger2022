@@ -28,7 +28,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
 
     fun refresh() {
         checkCacheRefreshInterval()
-        val lastUpdatedTime = prefHelper.getLastUpdatedTime()
+        val lastUpdatedTime = prefHelper.getLastUpdatedTimeMs()
 
         if(lastUpdatedTime != 0L && System.currentTimeMillis() - lastUpdatedTime < cacheRefreshInterval) {
             fetchFromDatabase()
@@ -38,7 +38,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     }
 
     private fun checkCacheRefreshInterval() {
-        cacheRefreshInterval = prefHelper.getCacheRefreshInterval() * 1_000
+        cacheRefreshInterval = prefHelper.getCacheRefreshIntervalSeconds() * 1_000
     }
 
     fun refreshBypassCache() {
@@ -98,7 +98,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
             }
             dogsRetrieved(list)
         }
-        prefHelper.saveLastUpdatedTime(System.currentTimeMillis())
+        prefHelper.saveLastUpdatedTimeMs(System.currentTimeMillis())
     }
 
     override fun onCleared() {
