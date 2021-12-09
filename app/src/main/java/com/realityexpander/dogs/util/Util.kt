@@ -26,7 +26,7 @@ fun getProgressDrawable(context: Context): CircularProgressDrawable {
 fun ImageView.loadImage(uri: String?, progressDrawable: CircularProgressDrawable) {
     val options = RequestOptions()
         .placeholder(progressDrawable)
-        .error(R.drawable.ic_alert)
+        .error(com.klinker.android.send_message.R.drawable.ic_alert)
     Glide.with(context)
         .setDefaultRequestOptions(options)
         .load(uri)

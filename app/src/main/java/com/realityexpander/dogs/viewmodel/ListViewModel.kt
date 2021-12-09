@@ -12,7 +12,9 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ListViewModel(application: Application): BaseViewModel(application) {
 
@@ -49,8 +51,11 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         loading.value = true
 
         launch {
-            val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
+            val dogs = withContext(Dispatchers.IO) {
+                DogDatabase(getApplication()).dogDao().getAllDogs()
+            }
             dogsRetrieved(dogs)
+
             Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_SHORT).show()
         }
     }
@@ -81,17 +86,20 @@ class ListViewModel(application: Application): BaseViewModel(application) {
     }
 
     private fun dogsRetrieved(dogList: List<DogBreed>) {
-        dogs.value = dogList
-        dogsLoadError.value = false
-        loading.value = false
+        launch(Dispatchers.Main) {
+            dogs.value = dogList
+            dogsLoadError.value = false
+            loading.value = false
+        }
     }
 
     private fun storeDogsLocally(list: List<DogBreed>) {
-        launch {
+        launch(Dispatchers.IO) {
             val dao = DogDatabase(getApplication()).dogDao()
             dao.deleteAllDogs()
 //            val result = dao.insertAll(*list.toTypedArray()) // use spread operator
             val result = dao.insertAll2(list) // use plain list
+
             var i = 0
             while (i < list.size) {
                 list[i].uuid = result[i].toInt()

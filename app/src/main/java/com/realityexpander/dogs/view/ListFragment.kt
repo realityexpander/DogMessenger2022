@@ -11,21 +11,25 @@ import androidx.recyclerview.widget.LinearLayoutManager
 
 import com.realityexpander.dogs.R
 import com.realityexpander.dogs.viewmodel.ListViewModel
-import kotlinx.android.synthetic.main.fragment_list.*
+import com.realityexpander.dogs.databinding.FragmentListBinding
+//import kotlinx.android.synthetic.main.fragment_list.*
 
 
 class ListFragment : Fragment() {
 
     private lateinit var viewModel: ListViewModel
+    private lateinit var bind: FragmentListBinding
     private val dogsListAdapter = DogsListAdapter(arrayListOf())
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         setHasOptionsMenu(true)
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false)
+
+        bind = FragmentListBinding.inflate(inflater, container, false)
+        return bind.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -34,42 +38,42 @@ class ListFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(ListViewModel::class.java)
         viewModel.refresh()
 
-        dogsList.apply {
+        bind.dogsList.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = dogsListAdapter
         }
 
-        refreshLayout.setOnRefreshListener {
-            dogsList.visibility = View.GONE
-            listError.visibility = View.GONE
-            loadingView.visibility = View.VISIBLE
+        bind.refreshLayout.setOnRefreshListener {
+            bind.dogsList.visibility = View.GONE
+            bind.listError.visibility = View.GONE
+            bind.loadingView.visibility = View.VISIBLE
             viewModel.refreshBypassCache()
-            refreshLayout.isRefreshing = false
+            bind.refreshLayout.isRefreshing = false
         }
 
         observeViewModel()
     }
 
     fun observeViewModel() {
-        viewModel.dogs.observe(this, Observer {dogs ->
+        viewModel.dogs.observe(viewLifecycleOwner, Observer { dogs ->
             dogs?.let {
-                dogsList.visibility = View.VISIBLE
+                bind.dogsList.visibility = View.VISIBLE
                 dogsListAdapter.updateDogList(dogs)
             }
         })
 
-        viewModel.dogsLoadError.observe(this, Observer {isError ->
+        viewModel.dogsLoadError.observe(viewLifecycleOwner, Observer { isError ->
             isError?.let {
-                listError.visibility = if(it) View.VISIBLE else View.GONE
+                bind.listError.visibility = if(it) View.VISIBLE else View.GONE
             }
         })
 
-        viewModel.loading.observe(this, Observer { isLoading ->
+        viewModel.loading.observe(viewLifecycleOwner, Observer { isLoading ->
             isLoading?.let {
-                loadingView.visibility = if(it) View.VISIBLE else View.GONE
+                bind.loadingView.visibility = if(it) View.VISIBLE else View.GONE
                 if(it) {
-                    listError.visibility = View.GONE
-                    dogsList.visibility = View.GONE
+                    bind.listError.visibility = View.GONE
+                    bind.dogsList.visibility = View.GONE
                 }
             }
         })

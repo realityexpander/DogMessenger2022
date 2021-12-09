@@ -26,7 +26,7 @@ class SmsReceiver : BroadcastReceiver() {
         val notification: Notification = Notification.Builder(context)
             .setContentText(body)
             .setContentTitle("New Message")
-            .setSmallIcon(R.drawable.ic_alert)
+            .setSmallIcon(com.klinker.android.send_message.R.drawable.ic_alert)
             .setStyle(Notification.BigTextStyle().bigText(body))
             .build()
         val notificationManagerCompat: NotificationManagerCompat =

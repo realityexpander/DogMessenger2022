@@ -32,7 +32,8 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
         <activity android:name="com.realityexpander.dogs.view.MainActivity"
-                android:label="Dog Messaging">
+                android:label="Dog Messaging"
+                android:exported="true">
 
             <!-- for sendSMS/MMS-->
             <intent-filter>

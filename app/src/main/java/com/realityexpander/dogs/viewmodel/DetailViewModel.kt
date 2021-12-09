@@ -4,7 +4,9 @@ import android.app.Application
 import androidx.lifecycle.MutableLiveData
 import com.realityexpander.dogs.model.DogBreed
 import com.realityexpander.dogs.model.DogDatabase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DetailViewModel(application: Application) : BaseViewModel(application) {
 
@@ -12,8 +14,18 @@ class DetailViewModel(application: Application) : BaseViewModel(application) {
 
     fun fetch(uuid: Int) {
         launch {
-            val dog = DogDatabase(getApplication()).dogDao().getDog(uuid)
-            dogLiveData.value = dog
+            val dog = withContext(Dispatchers.IO) {
+                DogDatabase(getApplication()).dogDao().getDog(uuid)
+            }
+            dogLiveData.value = dog ?: DogBreed(
+                    "unknown",
+                    "unknown",
+                    "unknown",
+                    "unknown",
+                    "unknown",
+                    "unknown",
+                    "unknown"
+                )
         }
     }
 }

@@ -5,8 +5,9 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = arrayOf(DogBreed::class), version = 1)
+@Database(entities = [DogBreed::class], version = 1)
 abstract class DogDatabase: RoomDatabase() {
+
     abstract fun dogDao(): DogDao
 
     companion object {
@@ -22,7 +23,7 @@ abstract class DogDatabase: RoomDatabase() {
         private fun buildDatabase(context: Context) = Room.databaseBuilder(
             context.applicationContext,
             DogDatabase::class.java,
-            "dogdatabase"
+            "dogdatabase.db"
         ).build()
     }
 }

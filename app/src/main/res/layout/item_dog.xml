@@ -8,12 +8,16 @@
         <variable
                 name="listener"
                 type="com.realityexpander.dogs.view.DogClickListener"/>
+        <variable
+                name="position"
+                type="Integer"/>
     </data>
 
     <LinearLayout
+            android:id="@+id/dogItemLayout"
+            android:onClick="@{listener::onDogClicked}"
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:onClick="@{listener::onDogClicked}"
             android:layout_height="125dp">
 
         <TextView
@@ -22,6 +26,13 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 android:text="@{String.valueOf(dog.uuid)}"/>
+
+        <TextView
+                android:id="@+id/positionId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:text="@{String.valueOf(position)}"/>
 
         <ImageView
                 android:id="@+id/imageView"
@@ -43,8 +54,8 @@
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="@{listener::onDogNameClicked}"
                     style="@style/Title"
+                    android:onClick="@{listener::onDogNameClicked}"
                     android:text="@{dog.dogBreed}"/>
 
             <TextView
