@@ -13,13 +13,14 @@
             android:layout_height="match_parent"
             android:gravity="center_horizontal">
 
+<!--                android:inputType="number"-->
         <EditText
                 android:id="@+id/smsDestination"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="number"
                 android:lines="1"
                 android:hint="To: "
+                android:inputType="phone"
                 android:gravity="center_horizontal"/>
 
         <EditText

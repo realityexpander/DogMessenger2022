@@ -3,6 +3,7 @@ package com.realityexpander.dogs.view
 
 import android.Manifest
 import android.app.PendingIntent
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -21,6 +22,7 @@ import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -31,7 +33,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.klinker.android.send_message.*
+import com.klinker.android.send_message.Message
+import com.klinker.android.send_message.Settings
+import com.klinker.android.send_message.Transaction
+import com.klinker.android.send_message.Utils
 import com.realityexpander.dogs.R
 import com.realityexpander.dogs.databinding.FragmentDetailBinding
 import com.realityexpander.dogs.databinding.SendSmsDialogBinding
@@ -142,6 +147,8 @@ class DetailFragment : Fragment() {
         val mediaStorageDir = File(
             Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Path")
+//        val mediaStorageDir =
+//            File(Environment.getExternalStorageDirectory().toString() + "/TempFolder")
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null
@@ -187,18 +194,24 @@ class DetailFragment : Fragment() {
         if (!dataBinding.root.context.packageName
                 .equals(Telephony.Sms.getDefaultSmsPackage(dataBinding.root.context))) {
 
-            val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
-            intent.putExtra(
-                Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
-                dataBinding.root.context.packageName
-            )
-            startActivity(intent)
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                val roleManager = getSystemService(this@DetailFragment.requireContext(), RoleManager::class.java)
+                val isRoleAvailable = roleManager?.isRoleAvailable(RoleManager.ROLE_BROWSER) ?: false
+                val isRoleHeld = roleManager?.isRoleHeld(RoleManager.ROLE_BROWSER) ?: false
+
+                if (isRoleAvailable && !isRoleHeld) {
+                    val roleRequestIntent =
+                        roleManager?.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                    startActivityForResult(roleRequestIntent, 12)
+                }
+            } else {
+                val intent = Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT)
+                intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, dataBinding.root.context.packageName)
+                startActivity(intent)
+            }
+
             return false
 
-//            val roleManager = getSystemService(RoleManager::class.java)
-//            val roleRequestIntent = roleManager.createRequestRoleIntent(RoleManager.ROLE_SMS)
-//            startActivityForResult(roleRequestIntent, 12)
-//            return false
         }
 
         return true
@@ -207,6 +220,8 @@ class DetailFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     fun onPermissionResult(permissionGranted: Boolean) {
+
+        // Permission to Send SMS
         if (sendSmsStarted && permissionGranted) {
             sendSmsStarted = false
 
@@ -250,6 +265,7 @@ class DetailFragment : Fragment() {
             }
         }
 
+        // Permission to Share
         if(shareImageStarted && permissionGranted) {
             shareImageStarted = false
 
