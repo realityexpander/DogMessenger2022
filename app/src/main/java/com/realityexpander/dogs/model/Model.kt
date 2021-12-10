@@ -34,6 +34,9 @@ data class DogBreed(
     @ColumnInfo(name = "dog_url")
     @SerializedName("url")
     val imageUrl: String?,
+
+//    @PrimaryKey(autoGenerate = true) // not sure why we cant use this way
+//    var uuid: Int = 0
 ) {
     @PrimaryKey(autoGenerate = true) // so dont need to use with constructor, but Room will create a key automatically
     var uuid: Int = 0

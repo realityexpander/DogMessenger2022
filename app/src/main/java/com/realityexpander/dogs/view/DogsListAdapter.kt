@@ -41,6 +41,16 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
         holder.view.position = position  // saves the position in a hidden view
 
         holder.bindViewToData(position)
+
+//        // YET another way to setup click listeners and use resource binding efficiently
+//        holder.view.listener2 = object: ClickListener {
+//            override fun click(v: View) {
+//                Toast.makeText(holder.view.root.context, "hello $position", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+        // AND ANOTHER way Uses the DogViewHolder for click() and ClickListener Interface
+        holder.view.listener2 = holder as ClickListener
     }
 
     // original using just viewBinding - uses hidden view to store uuid/position of this item
@@ -64,10 +74,11 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
         Toast.makeText(v.context, "clicked on the dog named ${(v as TextView).text}", Toast.LENGTH_SHORT).show()
     }
 
-    inner class DogViewHolder(var view: ItemDogBinding) : RecyclerView.ViewHolder(view.root) {
+    inner class DogViewHolder(var view: ItemDogBinding) : RecyclerView.ViewHolder(view.root), ClickListener {
         private val layout = bind.dogItemLayout  // this items' particular item View
         private val name = bind.name
         private val lifespan = bind.lifespan
+        private var dog: DogBreed? = null
 
         // Bound without layout resources
         fun bindViewToData(position: Int) {
@@ -76,6 +87,7 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
                 Toast.makeText(view.root.context, "clicked on the dog named ${dogsList[position].dogBreed}", Toast.LENGTH_SHORT).show()
             }
 
+            // Should not use the resource based nav
             layout.setOnClickListener { layoutView->
                 val uuid = dogsList[position].uuid
                 val action = ListFragmentDirections.actionDetailFragment(dogUuid = uuid)
@@ -85,7 +97,13 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
             lifespan.setOnClickListener {
                 Toast.makeText(view.root.context, "clicked on the dog with lifespan ${dogsList[position].lifeSpan}", Toast.LENGTH_SHORT).show()
             }
+
+            dog = dogsList[position]
         }
 
+        // From ClickListener interface resource definition lambda
+        override fun click(v: View) {
+            Toast.makeText(view.root.context, "Yo ${dog?.imageUrl}", Toast.LENGTH_SHORT).show()
+        }
     }
 }

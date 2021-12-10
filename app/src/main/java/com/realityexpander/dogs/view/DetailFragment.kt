@@ -24,6 +24,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
@@ -49,7 +50,9 @@ private const val TAG = "DetailFragment"
 
 class DetailFragment : Fragment() {
 
-    private lateinit var viewModel: DetailViewModel
+//    private lateinit var viewModel: DetailViewModel
+    val viewModel: DetailViewModel by viewModels()
+
     private var dogUuid = 0
 
     private lateinit var dataBinding: FragmentDetailBinding
@@ -75,14 +78,14 @@ class DetailFragment : Fragment() {
             dogUuid = DetailFragmentArgs.fromBundle(it).dogUuid
         }
 
-        viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
+//        viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
 
         observeViewModel()
         viewModel.fetch(dogUuid)
     }
 
     private fun observeViewModel() {
-        viewModel.dogLiveData.observe(this, Observer { dog ->
+        viewModel.dogLiveData.observe(viewLifecycleOwner, Observer { dog ->
             currentDog = dog
             dog?.let {
                 dataBinding.dog = dog
@@ -148,6 +151,8 @@ class DetailFragment : Fragment() {
                 return null
             }
         }
+
+        // this will create a new file everytime
 //        val mediaFile: File
 //        val generator = Random()
 //        var n = 1000

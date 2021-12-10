@@ -7,17 +7,17 @@ import androidx.room.Query
 @Dao
 interface DogDao {
     @Insert
-     fun insertAll(vararg dogs: DogBreed): List<Long> // use spread operator
+    suspend fun insertAll(vararg dogs: DogBreed): List<Long> // use spread operator
 
     @Insert
-     fun insertAll2(dogs: List<DogBreed>): List<Long>  // use plain list
+    suspend fun insertAll2(dogs: List<DogBreed>): List<Long>  // use plain list
 
     @Query("SELECT * FROM dogbreed")
-     fun getAllDogs(): List<DogBreed>
+    suspend fun getAllDogs(): List<DogBreed>
 
     @Query("SELECT * FROM dogbreed WHERE uuid = :dogId")
-     fun getDog(dogId: Int): DogBreed?
+    suspend fun getDog(dogId: Int): DogBreed?
 
     @Query("DELETE FROM dogbreed")
-     fun deleteAllDogs()
+    suspend fun deleteAllDogs()
 }

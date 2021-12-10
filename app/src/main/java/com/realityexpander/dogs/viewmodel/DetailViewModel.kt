@@ -14,9 +14,7 @@ class DetailViewModel(application: Application) : BaseViewModel(application) {
 
     fun fetch(uuid: Int) {
         launch {
-            val dog = withContext(Dispatchers.IO) {
-                DogDatabase(getApplication()).dogDao().getDog(uuid)
-            }
+            val dog = DogDatabase(getApplication()).dogDao().getDog(uuid)
             dogLiveData.value = dog ?: DogBreed(
                     "unknown",
                     "unknown",

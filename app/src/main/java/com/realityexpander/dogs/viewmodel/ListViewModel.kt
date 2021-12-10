@@ -16,7 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ListViewModel(application: Application): BaseViewModel(application) {
+class ListViewModel(application: Application) : BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
     private var cacheRefreshInterval = 5 * 60 * 1_000
@@ -32,7 +32,7 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         checkCacheRefreshInterval()
         val lastUpdatedTime = prefHelper.getLastUpdatedTimeMs()
 
-        if(lastUpdatedTime != 0L && System.currentTimeMillis() - lastUpdatedTime < cacheRefreshInterval) {
+        if (lastUpdatedTime != 0L && System.currentTimeMillis() - lastUpdatedTime < cacheRefreshInterval) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
@@ -51,12 +51,11 @@ class ListViewModel(application: Application): BaseViewModel(application) {
         loading.value = true
 
         launch {
-            val dogs = withContext(Dispatchers.IO) {
-                DogDatabase(getApplication()).dogDao().getAllDogs()
-            }
+            val dogs = DogDatabase(getApplication()).dogDao().getAllDogs()
             dogsRetrieved(dogs)
 
-            Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_SHORT).show()
+            Toast.makeText(getApplication(), "Dogs retrieved from database", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -67,11 +66,15 @@ class ListViewModel(application: Application): BaseViewModel(application) {
             dogsService.getDogs()
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(object: DisposableSingleObserver<List<DogBreed>>() {
+                .subscribeWith(object : DisposableSingleObserver<List<DogBreed>>() {
 
                     override fun onSuccess(dogList: List<DogBreed>) {
                         storeDogsLocally(dogList)
-                        Toast.makeText(getApplication(), "Dogs retrieved from endpoint", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            getApplication(),
+                            "Dogs retrieved from endpoint",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         NotificationsHelper(getApplication()).createNofitication()
                     }
 
@@ -118,9 +121,9 @@ class ListViewModel(application: Application): BaseViewModel(application) {
 
 // Spread operator - takes a Array, passes to vararg with spread(*) operator
 fun main() {
-    val x = listOf("123","456","789").toTypedArray()
+    val x = listOf("123", "456", "789").toTypedArray()
 
-    fun varArgFun(vararg arg:String) {
+    fun varArgFun(vararg arg: String) {
         arg.forEach { println(it) }
     }
 
