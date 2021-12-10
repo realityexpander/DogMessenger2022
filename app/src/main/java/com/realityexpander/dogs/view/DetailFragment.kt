@@ -141,6 +141,7 @@ class DetailFragment : Fragment() {
         }
     }
     private fun getOutputMediaFile(): File? {
+        // from https://mobikul.com/scoped-storage-example/
         val file = File(
             context?.getExternalFilesDir(
                 null
@@ -148,33 +149,35 @@ class DetailFragment : Fragment() {
         )
         return file
 
-
-        // To be safe, you should check that the SDCard is mounted
-        // using Environment.getExternalStorageState() before doing this.
-
-        val mediaStorageDir = File(
-            Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "Path")
-
-//        val mediaStorageDir =
-//            File(Environment.getExternalStorageDirectory().toString() + "/TempFolder")
-
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                return null
-            }
-        }
-
-        // this will create a new filename everytime
-//        val mediaFile: File
-//        val generator = Random()
-//        var n = 1000
-//        n = generator.nextInt(n)
-//        val mImageName = "Image-$n.jpeg"
-//        mediaFile = File(mediaStorageDir.path + File.separator.toString() + mImageName)
-//        return mediaFile
-
-        return File(mediaStorageDir.path + File.separator.toString() + "temp_sharing_file.jpeg" )
+// Old way of doing this
+        // check out: https://stackoverflow.com/questions/64923297/access-permission-denied-to-external-file-on-android-10
+//
+//        // To be safe, you should check that the SDCard is mounted
+//        // using Environment.getExternalStorageState() before doing this.
+//
+//        val mediaStorageDir = File(
+//            Environment.getExternalStoragePublicDirectory(
+//                Environment.DIRECTORY_PICTURES), "Path")
+//
+////        val mediaStorageDir =
+////            File(Environment.getExternalStorageDirectory().toString() + "/TempFolder")
+//
+//        if (!mediaStorageDir.exists()) {
+//            if (!mediaStorageDir.mkdirs()) {
+//                return null
+//            }
+//        }
+//
+//        // this will create a new filename everytime
+////        val mediaFile: File
+////        val generator = Random()
+////        var n = 1000
+////        n = generator.nextInt(n)
+////        val mImageName = "Image-$n.jpeg"
+////        mediaFile = File(mediaStorageDir.path + File.separator.toString() + mImageName)
+////        return mediaFile
+//
+//        return File(mediaStorageDir.path + File.separator.toString() + "temp_sharing_file.jpeg" )
     }
 
 
