@@ -14,6 +14,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.FileUtils.copy
 import android.provider.Telephony
 import android.telephony.SmsManager
 import android.telephony.TelephonyManager
@@ -33,6 +34,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import com.google.android.gms.common.util.IOUtils
 import com.klinker.android.send_message.Message
 import com.klinker.android.send_message.Settings
 import com.klinker.android.send_message.Transaction
@@ -44,10 +46,7 @@ import com.realityexpander.dogs.model.DogBreed
 import com.realityexpander.dogs.model.DogPalette
 import com.realityexpander.dogs.model.SmsInfo
 import com.realityexpander.dogs.viewmodel.DetailViewModel
-import java.io.File
-import java.io.FileNotFoundException
-import java.io.FileOutputStream
-import java.io.IOException
+import java.io.*
 
 
 private const val TAG = "DetailFragment"
@@ -142,20 +141,31 @@ class DetailFragment : Fragment() {
         }
     }
     private fun getOutputMediaFile(): File? {
+        val file = File(
+            context?.getExternalFilesDir(
+                null
+            ), "temp_for_sharing.jpeg"
+        )
+        return file
+
+
         // To be safe, you should check that the SDCard is mounted
         // using Environment.getExternalStorageState() before doing this.
+
         val mediaStorageDir = File(
             Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "Path")
+
 //        val mediaStorageDir =
 //            File(Environment.getExternalStorageDirectory().toString() + "/TempFolder")
+
         if (!mediaStorageDir.exists()) {
             if (!mediaStorageDir.mkdirs()) {
                 return null
             }
         }
 
-        // this will create a new file everytime
+        // this will create a new filename everytime
 //        val mediaFile: File
 //        val generator = Random()
 //        var n = 1000
@@ -163,6 +173,7 @@ class DetailFragment : Fragment() {
 //        val mImageName = "Image-$n.jpeg"
 //        mediaFile = File(mediaStorageDir.path + File.separator.toString() + mImageName)
 //        return mediaFile
+
         return File(mediaStorageDir.path + File.separator.toString() + "temp_sharing_file.jpeg" )
     }
 

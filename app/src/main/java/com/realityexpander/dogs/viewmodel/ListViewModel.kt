@@ -14,13 +14,11 @@ import io.reactivex.observers.DisposableSingleObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlin.math.abs
 
 class ListViewModel(application: Application) : BaseViewModel(application) {
 
     private var prefHelper = SharedPreferencesHelper(getApplication())
-    private var cacheRefreshInterval = 5 * 60 * 1_000
-
     private val dogsService = DogsApiService()
     private val disposable = CompositeDisposable()
 
@@ -29,18 +27,14 @@ class ListViewModel(application: Application) : BaseViewModel(application) {
     val loading = MutableLiveData<Boolean>()
 
     fun refresh() {
-        checkCacheRefreshInterval()
+        val cacheRefreshIntervalMs = prefHelper.getCacheRefreshIntervalMs()
         val lastUpdatedTime = prefHelper.getLastUpdatedTimeMs()
 
-        if (lastUpdatedTime != 0L && System.currentTimeMillis() - lastUpdatedTime < cacheRefreshInterval) {
+        if (abs(lastUpdatedTime - System.currentTimeMillis()) < cacheRefreshIntervalMs) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
         }
-    }
-
-    private fun checkCacheRefreshInterval() {
-        cacheRefreshInterval = prefHelper.getCacheRefreshIntervalSeconds() * 1_000
     }
 
     fun refreshBypassCache() {
