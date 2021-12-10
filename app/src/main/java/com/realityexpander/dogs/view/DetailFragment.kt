@@ -26,7 +26,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.palette.graphics.Palette
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -50,7 +49,6 @@ private const val TAG = "DetailFragment"
 
 class DetailFragment : Fragment() {
 
-//    private lateinit var viewModel: DetailViewModel
     val viewModel: DetailViewModel by viewModels()
 
     private var dogUuid = 0
@@ -77,8 +75,6 @@ class DetailFragment : Fragment() {
         arguments?.let {
             dogUuid = DetailFragmentArgs.fromBundle(it).dogUuid
         }
-
-//        viewModel = ViewModelProviders.of(this).get(DetailViewModel::class.java)
 
         observeViewModel()
         viewModel.fetch(dogUuid)

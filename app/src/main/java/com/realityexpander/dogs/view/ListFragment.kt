@@ -4,6 +4,7 @@ package com.realityexpander.dogs.view
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.Navigation
@@ -12,12 +13,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.realityexpander.dogs.R
 import com.realityexpander.dogs.viewmodel.ListViewModel
 import com.realityexpander.dogs.databinding.FragmentListBinding
-//import kotlinx.android.synthetic.main.fragment_list.*
+import com.realityexpander.dogs.viewmodel.DetailViewModel
+
 
 
 class ListFragment : Fragment() {
 
-    private lateinit var viewModel: ListViewModel
+    val viewModel: ListViewModel by viewModels()
+
     private lateinit var bind: FragmentListBinding
     private val dogsListAdapter = DogsListAdapter(arrayListOf())
 
@@ -35,7 +38,6 @@ class ListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProviders.of(this).get(ListViewModel::class.java)
         viewModel.refresh()
 
         bind.dogsList.apply {
