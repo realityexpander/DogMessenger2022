@@ -10,67 +10,73 @@ class SharedPreferencesHelper {
 
     companion object {
 
-        private const val PREF_LAST_UPDATED_TIME = "pref_last_updated_time"
+        private const val PREF_LAST_UPDATED_TIME_MS = "pref_last_updated_time_ms"
         private const val PREF_LAST_UPDATED_TIME_DATESTRING = "pref_last_updated_time_datestring"
         private const val PREF_NEXT_UPDATE_TIME_DATESTRING = "pref_next_update_time_datestring"
-        private const val PREF_CACHE_DURATION = "pref_cache_duration"
-        private const val DEFAULT_CACHE_DURATION = 500
+        private const val PREF_CACHE_REFRESH_INTERVAL_SECONDS = "pref_cache_interval_seconds"
+        private const val DEFAULT_CACHE_REFRESH_INTERVAL_SECONDS = 500L // seconds
         private var prefs: SharedPreferences? = null
 
-        @Volatile private var instance: SharedPreferencesHelper? = null
+        @Volatile
+        private var instance: SharedPreferencesHelper? = null
         private val LOCK = Any()
 
-        operator fun invoke(context: Context): SharedPreferencesHelper = instance ?: synchronized(LOCK) {
-            instance ?: buildHelper(context).also {
-                instance = it
+        operator fun invoke(context: Context): SharedPreferencesHelper =
+            instance ?: synchronized(LOCK) {
+                instance ?: buildHelper(context).also {
+                    instance = it
+                }
             }
-        }
 
-        private fun buildHelper(context: Context) : SharedPreferencesHelper {
+        private fun buildHelper(context: Context): SharedPreferencesHelper {
             prefs = PreferenceManager.getDefaultSharedPreferences(context)
             return SharedPreferencesHelper()
         }
     }
 
     fun getLastUpdatedTimeMs(): Long {
-        val timeMs = prefs?.getLong(PREF_LAST_UPDATED_TIME, 0L) ?: 0L
+        val lastUpdatedTimeMs = prefs?.getLong(PREF_LAST_UPDATED_TIME_MS, 0L) ?: 0L
 
-        return timeMs
+        return lastUpdatedTimeMs
     }
 
     fun saveLastUpdatedTimeMs(timeMs: Long) {
+        val nextUpdateTime = timeMs + getCacheRefreshIntervalMs()
+
         prefs?.edit(commit = true) {
-            putLong(PREF_LAST_UPDATED_TIME, timeMs)
+            putLong(PREF_LAST_UPDATED_TIME_MS, timeMs)
 
             // For display in preferences
             val lastUpdatedTimeDateString = timeMs.getDateStringWithSeconds()
             putString(PREF_LAST_UPDATED_TIME_DATESTRING, lastUpdatedTimeDateString)
 
             // For display in preferences
-            val nextUpdateTimeDateString = (timeMs + getCacheRefreshIntervalMs()).getDateStringWithSeconds()
+            val nextUpdateTimeDateString = nextUpdateTime.getDateStringWithSeconds()
             putString(PREF_NEXT_UPDATE_TIME_DATESTRING, nextUpdateTimeDateString)
-
         }
     }
 
-    fun getCacheRefreshIntervalMs(): Int {
-        // prefString is in seconds
-        val prefString = prefs?.getString(PREF_CACHE_DURATION, DEFAULT_CACHE_DURATION.toString()) ?: DEFAULT_CACHE_DURATION.toString()
-        if(prefString.isDigitsOnly()) {
-            val clampedInterval = prefString.toInt().coerceIn(0, 100_000)
+    fun getCacheRefreshIntervalMs(): Long {
+        val prefCacheRefreshIntervalSecondsStr = prefs?.getString(
+            PREF_CACHE_REFRESH_INTERVAL_SECONDS,
+            DEFAULT_CACHE_REFRESH_INTERVAL_SECONDS.toString()
+        ) ?: DEFAULT_CACHE_REFRESH_INTERVAL_SECONDS.toString()
 
-            saveCacheRefreshIntervalMs(clampedInterval)
-            return clampedInterval * 1_000 // convert to ms
+        if (prefCacheRefreshIntervalSecondsStr.isDigitsOnly()) {
+            val clampedDurationSeconds = prefCacheRefreshIntervalSecondsStr.toLong().coerceIn(0, 100_000)
+
+            saveCacheRefreshIntervalSeconds(clampedDurationSeconds)
+            return clampedDurationSeconds * 1_000L // convert to ms
         }
 
         // save a default value if validation fails
-        saveCacheRefreshIntervalMs(DEFAULT_CACHE_DURATION)
-        return DEFAULT_CACHE_DURATION
+        saveCacheRefreshIntervalSeconds(DEFAULT_CACHE_REFRESH_INTERVAL_SECONDS)
+        return DEFAULT_CACHE_REFRESH_INTERVAL_SECONDS
     }
 
-    fun saveCacheRefreshIntervalMs(durationMs: Int) {
+    fun saveCacheRefreshIntervalSeconds(durationSeconds: Long) {
         prefs?.edit(commit = true) {
-            putString(PREF_CACHE_DURATION, durationMs.toString())
+            putString(PREF_CACHE_REFRESH_INTERVAL_SECONDS, durationSeconds.toString())
         }
     }
 

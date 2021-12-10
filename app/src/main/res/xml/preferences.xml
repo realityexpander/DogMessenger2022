@@ -22,7 +22,7 @@
     <!-- Cant force this control to a number -->
     <EditTextPreference
             app:useSimpleSummaryProvider="true"
-            android:defaultValue="5"
+            android:defaultValue="500"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:inputType="phone"
@@ -30,7 +30,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:summary="Sets how long to get data from cache versus network."
-            android:key="pref_cache_duration" />
+            android:key="pref_cache_interval_seconds" />
 
     <EditTextPreference
             app:useSimpleSummaryProvider="true"

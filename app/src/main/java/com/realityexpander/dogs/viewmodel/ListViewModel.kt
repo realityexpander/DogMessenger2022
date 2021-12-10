@@ -28,9 +28,9 @@ class ListViewModel(application: Application) : BaseViewModel(application) {
 
     fun refresh() {
         val cacheRefreshIntervalMs = prefHelper.getCacheRefreshIntervalMs()
-        val lastUpdatedTime = prefHelper.getLastUpdatedTimeMs()
+        val lastUpdatedTimeMs = prefHelper.getLastUpdatedTimeMs()
 
-        if (abs(lastUpdatedTime - System.currentTimeMillis()) < cacheRefreshIntervalMs) {
+        if (abs(lastUpdatedTimeMs - System.currentTimeMillis()) < cacheRefreshIntervalMs) {
             fetchFromDatabase()
         } else {
             fetchFromRemote()
