@@ -101,9 +101,79 @@ class DogsListAdapter(val dogsList: ArrayList<DogBreed>) :
             dog = dogsList[position]
         }
 
-        // From ClickListener interface resource definition lambda
-        override fun click(v: View) {
-            Toast.makeText(view.root.context, "Yo ${dog?.imageUrl}", Toast.LENGTH_SHORT).show()
-        }
+            // From ClickListener interface resource definition lambda
+            override fun click(v: View) {
+                Toast.makeText(view.root.context, "Yo ${dog?.imageUrl}", Toast.LENGTH_SHORT).show()
+            }
     }
 }
+
+
+interface X {
+    fun y() {
+        println("from interface X.y()")
+    }
+
+    companion object {
+        fun y2() = println("from companion object X.y2")
+    }
+}
+class Z(): X {
+
+    override fun y() {
+        println("hello from Z.y()")
+    }
+}
+class Z2(): X {
+ // interface not overridden
+}
+
+fun main() {
+
+    var z = Z()
+    var z2 = Z2()
+    var x = X  // only interface, not an object, cannot create instance, only has access to statics (companion object)
+
+
+    z.y() // uses override y fun definition
+    z2.y() // uses interface y fun definition
+    x.y2() // can only access companion object
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
