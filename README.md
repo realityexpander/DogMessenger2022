@@ -7,3 +7,4 @@ An MVVM dogs app using AndroidX/JetPack. Allows user to send SMS/MMS using moder
 - Fragments, Activities, Navigation Manager
 - Modern SMS & MMS (requires app to be default SMS app to send MMS)
 - Modern Activity Result provider interface
+- Modern permissions management
