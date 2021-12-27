@@ -12,7 +12,7 @@ An MVVM dogs app using AndroidX/JetPack. Allows user to send SMS/MMS using moder
 To install the Apk:
 
 1. Open this link on your Android device:
-   https://github.com/realityexpander/DogMessenger2022/blob/master/DogMessenger_1.0.apk
+   https://github.com/realityexpander/DogMessenger2022/blob/master/DogMessenger.apk
 2. Tap the "skewer" menu and tap the "download"
 
    [![](https://user-images.githubusercontent.com/5157474/147434050-57102a30-af32-46ed-a90b-d94e0c4a4f35.jpg)]()
