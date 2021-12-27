@@ -21,6 +21,7 @@ Allows user to send SMS/MMS using modern API's. Requires setting the app as a de
 - Room Database
 - Offline data caching
 - Preferences Component
+- Palette Component
 
 To install the Apk:
 

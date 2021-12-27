@@ -36,5 +36,5 @@
     <fragment
             android:id="@+id/settingsFragment"
             android:name="com.realityexpander.dogs.view.SettingsFragment"
-            android:label="SettingsFragment"/>
+            android:label="Settings" />
 </navigation>
