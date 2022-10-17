@@ -1,5 +1,7 @@
 # DogMessenger2022
-An MVVM dogs messaging app using AndroidX/JetPack architecture components.
+An MVVM Dog Messaging app using AndroidX/JetPack architecture components.
+
+Send doc pics via SMS/MMS!
 
 [<img src="https://user-images.githubusercontent.com/5157474/147440448-15196801-1a93-457d-8ea9-9eecbb459bca.png" width="175"/>](https://user-images.githubusercontent.com/5157474/147440448-15196801-1a93-457d-8ea9-9eecbb459bca.png)
 [<img src="https://user-images.githubusercontent.com/5157474/147440514-ce7eb07e-3483-4999-8181-54a08c5ae73d.png" width="175"/>](https://user-images.githubusercontent.com/5157474/147440514-ce7eb07e-3483-4999-8181-54a08c5ae73d.png)
@@ -7,7 +9,8 @@ An MVVM dogs messaging app using AndroidX/JetPack architecture components.
 [<img src="https://user-images.githubusercontent.com/5157474/147440653-8631d0bc-56de-458b-9cfc-4911cf70898d.png" width="175"/>](https://user-images.githubusercontent.com/5157474/147440653-8631d0bc-56de-458b-9cfc-4911cf70898d.png)
 [<img src="https://user-images.githubusercontent.com/5157474/147440469-b4eef2b4-3738-44c3-ad01-3c2e2235c3b0.png" width="175"/>](https://user-images.githubusercontent.com/5157474/147440469-b4eef2b4-3738-44c3-ad01-3c2e2235c3b0.png)
 
-Allows user to send SMS/MMS using modern API's. Requires setting the app as a default SMS app to send image MMS.
+Allows user to send SMS/MMS using modern API's. 
+NOTE: Requires setting the app as a default SMS app to send image MMS.
 
 ---- Tech used ----
 - MVVM architecture
